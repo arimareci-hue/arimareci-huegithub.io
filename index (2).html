@@ -1,0 +1,694 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>StayView | Hotels, Apartments & Houses</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: Arial, Helvetica, sans-serif;
+        }
+        body {
+            background-color: #faf7f5;
+            color: #1c1917;
+            line-height: 1.5;
+        }
+        header {
+            background: #ffffff;
+            padding: 16px 5%;
+            border-bottom: 1px solid #e7e5e4;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 12px;
+            position: sticky;
+            top: 0;
+            z-index: 50;
+        }
+        .logo {
+            font-size: 24px;
+            font-weight: bold;
+            color: #dc2626;
+            cursor: pointer;
+        }
+        .nav-buttons {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+        .filter-btn {
+            padding: 8px 16px;
+            border: 1px solid #d6d3d1;
+            background: #ffffff;
+            border-radius: 20px;
+            cursor: pointer;
+            font-weight: bold;
+            color: #57534e;
+            transition: all 0.2s ease;
+        }
+        .filter-btn:hover {
+            border-color: #dc2626;
+            color: #dc2626;
+        }
+        .filter-btn.active {
+            background: #dc2626;
+            color: #ffffff;
+            border-color: #dc2626;
+        }
+        .hero {
+            background: linear-gradient(135deg, #1c1917, #450a0a);
+            color: #ffffff;
+            text-align: center;
+            padding: 36px 20px;
+        }
+        .hero h1 {
+            font-size: 30px;
+            margin-bottom: 8px;
+        }
+        .hero p {
+            color: #fecaca;
+        }
+        .filter-bar {
+            max-width: 1100px;
+            margin: 20px auto;
+            background: #ffffff;
+            padding: 16px;
+            border-radius: 10px;
+            border: 1px solid #e7e5e4;
+            display: flex;
+            gap: 16px;
+            flex-wrap: wrap;
+            align-items: flex-end;
+        }
+        .filter-group {
+            display: flex;
+            flex-direction: column;
+            flex: 1;
+            min-width: 160px;
+        }
+        .filter-group label {
+            font-size: 12px;
+            font-weight: bold;
+            color: #78716c;
+            margin-bottom: 4px;
+            text-transform: uppercase;
+        }
+        .filter-group select {
+            padding: 8px;
+            border: 1px solid #d6d3d1;
+            border-radius: 6px;
+            font-size: 14px;
+            background: #fafaf9;
+            cursor: pointer;
+        }
+        .reset-btn {
+            padding: 9px 16px;
+            background: #f5f5f4;
+            color: #1c1917;
+            border: 1px solid #d6d3d1;
+            border-radius: 6px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        .reset-btn:hover {
+            background: #e7e5e4;
+        }
+        .container {
+            max-width: 1100px;
+            margin: 0 auto 50px;
+            padding: 0 16px;
+        }
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 24px;
+        }
+        .card {
+            background: #ffffff;
+            border-radius: 12px;
+            overflow: hidden;
+            border: 1px solid #e7e5e4;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.06);
+            display: flex;
+            flex-direction: column;
+            cursor: pointer;
+            transition: transform 0.2s ease, border-color 0.2s ease;
+        }
+        .card:hover {
+            border-color: #dc2626;
+            transform: translateY(-3px);
+        }
+        .img-box {
+            position: relative;
+            height: 230px;
+            background: #e7e5e4;
+        }
+        .img-box img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+        .badge {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            background: #1c1917;
+            color: #ffffff;
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+        .room-tag {
+            position: absolute;
+            bottom: 10px;
+            right: 10px;
+            background: #ffffff;
+            color: #991b1b;
+            padding: 4px 10px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: bold;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .card-body {
+            padding: 18px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            flex-grow: 1;
+        }
+        .specs {
+            font-size: 13px;
+            color: #dc2626;
+            font-weight: bold;
+            margin-bottom: 6px;
+        }
+        .card-title {
+            font-size: 20px;
+            margin-bottom: 6px;
+            color: #1c1917;
+        }
+        .card-desc {
+            font-size: 14px;
+            color: #57534e;
+            margin-bottom: 16px;
+        }
+        .card-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-top: 1px solid #e7e5e4;
+            padding-top: 12px;
+        }
+        .price {
+            font-size: 20px;
+            font-weight: bold;
+            color: #1c1917;
+        }
+        .price span {
+            font-size: 13px;
+            font-weight: normal;
+            color: #78716c;
+        }
+        .book-btn {
+            background: #dc2626;
+            color: #ffffff;
+            border: none;
+            padding: 10px 18px;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        .book-btn:hover {
+            background: #b91c1c;
+        }
+        .modal-bg {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(28, 25, 23, 0.8);
+            justify-content: center;
+            align-items: center;
+            z-index: 100;
+            padding: 16px;
+        }
+        .modal-bg.open {
+            display: flex;
+        }
+        .modal-box {
+            background: #ffffff;
+            padding: 24px;
+            border-radius: 12px;
+            max-width: 520px;
+            width: 100%;
+            position: relative;
+            max-height: 92vh;
+            overflow-y: auto;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+        }
+        .close-btn {
+            position: absolute;
+            top: 12px;
+            right: 16px;
+            font-size: 26px;
+            border: none;
+            background: none;
+            cursor: pointer;
+            color: #78716c;
+        }
+        .close-btn:hover {
+            color: #1c1917;
+        }
+        .rate-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+            margin: 14px 0 18px;
+        }
+        .rate-card {
+            border: 2px solid #e7e5e4;
+            border-radius: 8px;
+            padding: 12px;
+            cursor: pointer;
+            transition: all 0.2s;
+            background: #fafaf9;
+        }
+        .rate-card:hover {
+            border-color: #a8a29e;
+        }
+        .rate-card.selected {
+            border-color: #dc2626;
+            background: #fef2f2;
+        }
+        .rate-label {
+            font-size: 12px;
+            font-weight: bold;
+            color: #78716c;
+            text-transform: uppercase;
+        }
+        .rate-amount {
+            font-size: 18px;
+            font-weight: bold;
+            color: #1c1917;
+            margin: 2px 0;
+        }
+        .rate-note {
+            font-size: 11px;
+            color: #dc2626;
+            font-weight: bold;
+        }
+        .form-row {
+            margin-bottom: 12px;
+        }
+        .form-row label {
+            display: block;
+            font-size: 13px;
+            font-weight: bold;
+            margin-bottom: 4px;
+            color: #44403c;
+        }
+        .form-row input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #d6d3d1;
+            border-radius: 6px;
+            font-size: 14px;
+        }
+        .total-bar {
+            background: #fef2f2;
+            color: #991b1b;
+            border: 1px solid #fecaca;
+            padding: 12px;
+            border-radius: 8px;
+            font-weight: bold;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+        .confirm-btn {
+            width: 100%;
+            background: #dc2626;
+            color: #ffffff;
+            border: none;
+            padding: 12px;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        .confirm-btn:hover {
+            background: #b91c1c;
+        }
+        .no-results {
+            text-align: center;
+            grid-column: 1 / -1;
+            padding: 40px;
+            color: #78716c;
+            font-size: 16px;
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <div class="logo" onclick="resetAllFilters()">StayView</div>
+    <div class="nav-buttons">
+        <button type="button" class="filter-btn active" onclick="filterType('all', this)">All Stays</button>
+        <button type="button" class="filter-btn" onclick="filterType('hotel', this)">Hotels</button>
+        <button type="button" class="filter-btn" onclick="filterType('apartment', this)">Apartments</button>
+        <button type="button" class="filter-btn" onclick="filterType('house', this)">Houses</button>
+    </div>
+</header>
+
+<div class="hero">
+    <h1>See Every Room &amp; Bathroom Before You Book</h1>
+    <p>Click any property to view Nightly, Weekly, Monthly, and Extended Stay rates.</p>
+</div>
+
+<div class="container" style="margin-bottom: 10px; margin-top: 20px;">
+    <div class="filter-bar">
+        <div class="filter-group">
+            <label>Guests Capacity</label>
+            <select id="guestSelect" onchange="filterAll()">
+                <option value="0">Any Guests</option>
+                <option value="1">1+ Guests</option>
+                <option value="2">2+ Guests</option>
+                <option value="4">4+ Guests</option>
+                <option value="6">6+ Guests</option>
+            </select>
+        </div>
+        <div class="filter-group">
+            <label>Sort Price</label>
+            <select id="priceSort" onchange="filterAll()">
+                <option value="default">Recommended</option>
+                <option value="low">Price: Low to High</option>
+                <option value="high">Price: High to Low</option>
+            </select>
+        </div>
+        <button type="button" class="reset-btn" onclick="resetAllFilters()">Reset Filters</button>
+    </div>
+</div>
+
+<div class="container">
+    <div class="grid" id="propertyGrid">
+        <!-- Property cards dynamically injected by JavaScript -->
+    </div>
+</div>
+
+<!-- Booking Modal -->
+<div class="modal-bg" id="bookingModal">
+    <div class="modal-box">
+        <button type="button" class="close-btn" onclick="closeModal()">&times;</button>
+        <h2 id="modalTitle" style="margin-bottom: 4px;">Property Name</h2>
+        <p id="modalSpecs" class="specs" style="margin-bottom: 14px;">Specs</p>
+        
+        <label style="font-size: 13px; font-weight: bold; color: #78716c; text-transform: uppercase;">Select Rate Plan</label>
+        <div class="rate-grid" id="rateGrid">
+            <!-- Rate options generated dynamically -->
+        </div>
+
+        <form id="bookingForm" onsubmit="handleBooking(event)">
+            <div class="form-row">
+                <label>Full Name</label>
+                <input type="text" id="bookName" placeholder="e.g. Jane Doe" required>
+            </div>
+            <div class="form-row">
+                <label>Email Address</label>
+                <input type="email" id="bookEmail" placeholder="jane@example.com" required>
+            </div>
+            <div class="total-bar">
+                <span>Total Amount:</span>
+                <span id="modalTotal">$0</span>
+            </div>
+            <button type="submit" class="confirm-btn">Confirm Reservation</button>
+        </form>
+    </div>
+</div>
+
+<script>
+    // Property Data Store
+    const properties = [
+        {
+            id: 1,
+            type: 'hotel',
+            title: 'Grand Azure Hotel & Spa',
+            desc: 'Luxury ocean-view room with king bed, marble bathroom, and balcony access.',
+            specs: '1 King Bed • 1 Bath • Sleeps 2',
+            capacity: 2,
+            image: 'https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=600&q=80',
+            tag: 'Ocean View',
+            rates: {
+                nightly: { label: 'Nightly Rate', amount: 180, note: 'Standard flexibility' },
+                weekly: { label: 'Weekly Rate', amount: 1100, note: 'Save 13%' },
+                monthly: { label: 'Monthly Stay', amount: 3800, note: 'Save 30%' },
+                extended: { label: 'Extended Stay', amount: 3500, note: 'Long-term special' }
+            }
+        },
+        {
+            id: 2,
+            type: 'apartment',
+            title: 'Downtown Skyline Loft',
+            desc: 'Modern open-plan apartment featuring high ceilings, full kitchen, and rainfall shower.',
+            specs: '2 Queen Beds • 1 Bath • Sleeps 4',
+            capacity: 4,
+            image: 'https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?auto=format&fit=crop&w=600&q=80',
+            tag: 'City Center',
+            rates: {
+                nightly: { label: 'Nightly Rate', amount: 140, note: 'Standard flexibility' },
+                weekly: { label: 'Weekly Rate', amount: 890, note: 'Save 10%' },
+                monthly: { label: 'Monthly Stay', amount: 3100, note: 'Save 26%' },
+                extended: { label: 'Extended Stay', amount: 2900, note: 'Long-term special' }
+            }
+        },
+        {
+            id: 3,
+            type: 'house',
+            title: 'Whispering Pines Chalet',
+            desc: 'Cozy rustic mountain house with stone fireplace, wrap-around deck, and soaking tub.',
+            specs: '3 Beds • 2 Baths • Sleeps 6',
+            capacity: 6,
+            image: 'https://images.unsplash.com/photo-1518780664697-55e3ad937233?auto=format&fit=crop&w=600&q=80',
+            tag: 'Mountain View',
+            rates: {
+                nightly: { label: 'Nightly Rate', amount: 270, note: 'Standard flexibility' },
+                weekly: { label: 'Weekly Rate', amount: 1750, note: 'Save 8%' },
+                monthly: { label: 'Monthly Stay', amount: 6000, note: 'Save 25%' },
+                extended: { label: 'Extended Stay', amount: 5500, note: 'Long-term special' }
+            }
+        },
+        {
+            id: 4,
+            type: 'hotel',
+            title: 'The Metro Boutique Suite',
+            desc: 'Chic urban boutique hotel suite complete with espresso bar and soaking tub.',
+            specs: '1 Queen Bed • 1 Bath • Sleeps 2',
+            capacity: 2,
+            image: 'https://images.unsplash.com/photo-1590490360182-c33d57733427?auto=format&fit=crop&w=600&q=80',
+            tag: 'Boutique',
+            rates: {
+                nightly: { label: 'Nightly Rate', amount: 160, note: 'Standard flexibility' },
+                weekly: { label: 'Weekly Rate', amount: 1000, note: 'Save 11%' },
+                monthly: { label: 'Monthly Stay', amount: 3500, note: 'Save 27%' },
+                extended: { label: 'Extended Stay', amount: 3200, note: 'Long-term special' }
+            }
+        },
+        {
+            id: 5,
+            type: 'apartment',
+            title: 'Sunny Seaside Flat',
+            desc: 'Bright beachside apartment steps from the boardwalk with outdoor terrace.',
+            specs: '1 King Bed • 1 Bath • Sleeps 2',
+            capacity: 2,
+            image: 'https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?auto=format&fit=crop&w=600&q=80',
+            tag: 'Beachfront',
+            rates: {
+                nightly: { label: 'Nightly Rate', amount: 195, note: 'Standard flexibility' },
+                weekly: { label: 'Weekly Rate', amount: 1250, note: 'Save 9%' },
+                monthly: { label: 'Monthly Stay', amount: 4400, note: 'Save 25%' },
+                extended: { label: 'Extended Stay', amount: 4000, note: 'Long-term special' }
+            }
+        },
+        {
+            id: 6,
+            type: 'house',
+            title: 'Heritage Garden Villa',
+            desc: 'Spacious historical home featuring private courtyard, chef kitchen, and luxury baths.',
+            specs: '4 Beds • 3 Baths • Sleeps 8',
+            capacity: 8,
+            image: 'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=600&q=80',
+            tag: 'Private Villa',
+            rates: {
+                nightly: { label: 'Nightly Rate', amount: 450, note: 'Standard flexibility' },
+                weekly: { label: 'Weekly Rate', amount: 2900, note: 'Save 8%' },
+                monthly: { label: 'Monthly Stay', amount: 10500, note: 'Save 22%' },
+                extended: { label: 'Extended Stay', amount: 9800, note: 'Long-term special' }
+            }
+        }
+    ];
+
+    let currentFilterType = 'all';
+    let activeProperty = null;
+    let selectedRateKey = 'nightly';
+
+    // Render Properties
+    function renderProperties(data) {
+        const grid = document.getElementById('propertyGrid');
+        grid.innerHTML = '';
+
+        if (data.length === 0) {
+            grid.innerHTML = `<div class="no-results">No properties match your filter criteria. Try adjusting guests.</div>`;
+            return;
+        }
+
+        data.forEach(prop => {
+            const card = document.createElement('div');
+            card.className = 'card';
+            card.onclick = () => openModal(prop.id);
+            card.innerHTML = `
+                <div class="img-box">
+                    <img src="${prop.image}" alt="${prop.title}">
+                    <div class="badge">${prop.type}</div>
+                    <div class="room-tag">${prop.tag}</div>
+                </div>
+                <div class="card-body">
+                    <div>
+                        <div class="specs">${prop.specs}</div>
+                        <h3 class="card-title">${prop.title}</h3>
+                        <p class="card-desc">${prop.desc}</p>
+                    </div>
+                    <div class="card-footer">
+                        <div class="price">$${prop.rates.nightly.amount} <span>/ night</span></div>
+                        <button type="button" class="book-btn" onclick="event.stopPropagation(); openModal(${prop.id})">View Rates</button>
+                    </div>
+                </div>
+            `;
+            grid.appendChild(card);
+        });
+    }
+
+    // Filter Logic
+    function filterType(type, btnElement) {
+        currentFilterType = type;
+        
+        // Update active tab buttons
+        document.querySelectorAll('header .filter-btn').forEach(btn => {
+            btn.classList.remove('active');
+        });
+        if (btnElement) btnElement.classList.add('active');
+
+        filterAll();
+    }
+
+    function filterAll() {
+        const guestVal = parseInt(document.getElementById('guestSelect').value);
+        const sortVal = document.getElementById('priceSort').value;
+
+        let filtered = properties.filter(p => {
+            const matchesType = (currentFilterType === 'all' || p.type === currentFilterType);
+            const matchesGuests = (p.capacity >= guestVal);
+            return matchesType && matchesGuests;
+        });
+
+        // Sorting
+        if (sortVal === 'low') {
+            filtered.sort((a, b) => a.rates.nightly.amount - b.rates.nightly.amount);
+        } else if (sortVal === 'high') {
+            filtered.sort((a, b) => b.rates.nightly.amount - a.rates.nightly.amount);
+        }
+
+        renderProperties(filtered);
+    }
+
+    function resetAllFilters() {
+        currentFilterType = 'all';
+        document.getElementById('guestSelect').value = '0';
+        document.getElementById('priceSort').value = 'default';
+        
+        document.querySelectorAll('header .filter-btn').forEach((btn, index) => {
+            if (index === 0) btn.classList.add('active');
+            else btn.classList.remove('active');
+        });
+
+        renderProperties(properties);
+    }
+
+    // Modal Control
+    function openModal(id) {
+        activeProperty = properties.find(p => p.id === id);
+        if (!activeProperty) return;
+
+        document.getElementById('modalTitle').innerText = activeProperty.title;
+        document.getElementById('modalSpecs').innerText = activeProperty.specs;
+
+        selectedRateKey = 'nightly'; // default selection
+        buildRateGrid();
+        updateModalTotal();
+
+        document.getElementById('bookingModal').classList.add('open');
+    }
+
+    function closeModal() {
+        document.getElementById('bookingModal').classList.remove('open');
+        activeProperty = null;
+    }
+
+    function buildRateGrid() {
+        const rateGrid = document.getElementById('rateGrid');
+        rateGrid.innerHTML = '';
+
+        for (const [key, rate] of Object.entries(activeProperty.rates)) {
+            const card = document.createElement('div');
+            card.className = `rate-card ${key === selectedRateKey ? 'selected' : ''}`;
+            card.onclick = () => selectRate(key);
+            card.innerHTML = `
+                <div class="rate-label">${rate.label}</div>
+                <div class="rate-amount">$${rate.amount}</div>
+                <div class="rate-note">${rate.note}</div>
+            `;
+            rateGrid.appendChild(card);
+        }
+    }
+
+    function selectRate(key) {
+        selectedRateKey = key;
+        document.querySelectorAll('.rate-card').forEach(card => card.classList.remove('selected'));
+        event.currentTarget.classList.add('selected');
+        updateModalTotal();
+    }
+
+    function updateModalTotal() {
+        if (!activeProperty) return;
+        const amount = activeProperty.rates[selectedRateKey].amount;
+        document.getElementById('modalTotal').innerText = `$${amount}`;
+    }
+
+    function handleBooking(e) {
+        e.preventDefault();
+        const name = document.getElementById('bookName').value;
+        const rateDetails = activeProperty.rates[selectedRateKey];
+        
+        alert(`Thank you, ${name}! Your booking for ${activeProperty.title} (${rateDetails.label}) has been successfully reserved.`);
+        closeModal();
+        document.getElementById('bookingForm').reset();
+    }
+
+    // Initialize Page Load
+    renderProperties(properties);
+</script>
+
+</body>
+</html>
